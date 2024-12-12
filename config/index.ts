@@ -5,7 +5,7 @@ export const API_URL = `${process.env.NEXT_PUBLIC_API_URL}`
 export const APP_INFO: AppInfo = {
   title: 'ICArEHB Welcome Agent',
   description: "This agent is here to guide you and help you settle in, offering all the essential information you'll need as you start this new chapter with us.",
-  copyright: '© ICArEHB Welcome Agent 2024',
+  copyright: 'ICArEHB Welcome Agent 2024',
   privacy_policy: '',
   default_language: 'en',
 }
