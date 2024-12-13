@@ -10,6 +10,7 @@ const translation = {
     openingStatementTitle: 'Opening statement',
     powerBy: 'Powered by',
     prompt: 'Prompt',
+    delete: "Delete",
     privatePromptConfigTitle: 'Conversation settings',
     publicPromptConfigTitle: 'Initial Prompt',
     configStatusDes: 'Before start, you can modify conversation settings',
