@@ -614,6 +614,7 @@ const Main: FC<IMainProps> = () => {
         list={conversationList}
         onCurrentIdChange={handleConversationIdChange}
         currentId={currConversationId}
+        onDeleteConversation={handleDeleteConversation} //
         copyRight={APP_INFO.copyright || APP_INFO.title}
       />
     )
