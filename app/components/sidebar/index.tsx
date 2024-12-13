@@ -33,6 +33,13 @@ const Sidebar: FC<ISidebarProps> = ({
   onDeleteConversation,
 }) => {
   const { t } = useTranslation()
+
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
+
+  const toggleMenu = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation()
+    setOpenMenuId(prev => (prev === id ? null : id))
+  }
   
   return (
     <div
@@ -60,7 +67,7 @@ const Sidebar: FC<ISidebarProps> = ({
                 isCurrent
                   ? 'bg-primary-50 text-primary-600'
                   : 'text-gray-700 hover:bg-gray-100 hover:text-gray-700',
-                'group relative flex items-center rounded-md px-2 py-2 text-sm font-medium cursor-pointer'
+                'relative flex items-center rounded-md px-2 py-2 text-sm font-medium cursor-pointer'
               )}
             >
               <div
@@ -79,35 +86,32 @@ const Sidebar: FC<ISidebarProps> = ({
                 {item.name}
               </div>
               
-              {/* Ellipsis menu button (only visible on hover) */}
+              {/* Three-dot button to toggle menu on click */}
               <div className="relative">
                 <button
-                  className="ml-2 p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-200 invisible group-hover:visible"
-                  onClick={(e) => {
-                    // Prevent triggering conversation change when clicking on menu
-                    e.stopPropagation()
-                  }}
+                  className="ml-2 p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-200"
+                  onClick={(e) => toggleMenu(e, item.id)}
                 >
                   <EllipsisVerticalIcon className="h-5 w-5" />
                 </button>
 
-                {/* Dropdown menu shown on hover of the ellipsis button. 
-                    One way to handle it is to always show the menu on hover (CSS-only), or toggle state on click.
-                    Here is a hover-based example. Adjust as needed.
-                */}
-                <div className="absolute right-0 top-8 z-10 w-28 py-1 bg-white rounded-md shadow-lg border border-gray-200 invisible group-hover:visible">
-                  <button
-                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                    onClick={() => {
-                      if (onDeleteConversation) {
-                        onDeleteConversation(item.id)
-                      }
-                    }}
-                  >
-                    <TrashIcon className="h-4 w-4 mr-2 text-red-500" />
-                    {t('app.chat.delete')}
-                  </button>
-                </div>
+                {/* Dropdown menu only shown when openMenuId matches item.id */}
+                {openMenuId === item.id && (
+                  <div className="absolute right-0 top-8 z-10 w-28 py-1 bg-white rounded-md shadow-lg border border-gray-200">
+                    <button
+                      className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                      onClick={() => {
+                        if (onDeleteConversation) {
+                          onDeleteConversation(item.id)
+                        }
+                        setOpenMenuId(null) // Close after delete
+                      }}
+                    >
+                      <TrashIcon className="h-4 w-4 mr-2 text-red-500" />
+                      {t('app.chat.delete')}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )
