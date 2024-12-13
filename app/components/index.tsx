@@ -598,7 +598,14 @@ const Main: FC<IMainProps> = () => {
     setChatList(newChatList)
     notify({ type: 'success', message: t('common.api.success') })
   }
-
+  
+  const handleDeleteConversation = (id: string) => {
+    setConversationList((prev) => prev.filter(conv => conv.id !== id))
+      if (id === currConversationId) {
+        setCurrConversationId('-1', APP_ID, false)
+      }
+  }
+  
   const renderSidebar = () => {
     if (!APP_ID || !APP_INFO || !promptConfig)
       return null
