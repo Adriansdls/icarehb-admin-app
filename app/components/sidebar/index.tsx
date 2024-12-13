@@ -1,13 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import type { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   ChatBubbleOvalLeftEllipsisIcon,
   PencilSquareIcon,
+  EllipsisVerticalIcon,
+  TrashIcon
 } from '@heroicons/react/24/outline'
 import { ChatBubbleOvalLeftEllipsisIcon as ChatBubbleOvalLeftEllipsisSolidIcon } from '@heroicons/react/24/solid'
 import Button from '@/app/components/base/button'
-// import Card from './card'
 import type { ConversationItem } from '@/types/app'
 
 function classNames(...classes: any[]) {
@@ -21,6 +22,7 @@ export type ISidebarProps = {
   currentId: string
   onCurrentIdChange: (id: string) => void
   list: ConversationItem[]
+  onDeleteConversation?: (id: string) => void // Add this prop if you want to handle deletion
 }
 
 const Sidebar: FC<ISidebarProps> = ({
@@ -28,8 +30,10 @@ const Sidebar: FC<ISidebarProps> = ({
   currentId,
   onCurrentIdChange,
   list,
+  onDeleteConversation,
 }) => {
   const { t } = useTranslation()
+  
   return (
     <div
       className="shrink-0 flex flex-col overflow-y-auto bg-white pc:w-[244px] tablet:w-[192px] mobile:w-[240px]  border-r border-gray-200 tablet:h-[calc(100vh_-_3rem)] mobile:h-screen"
@@ -47,36 +51,69 @@ const Sidebar: FC<ISidebarProps> = ({
       <nav className="mt-4 flex-1 space-y-1 bg-white p-4 !pt-0">
         {list.map((item) => {
           const isCurrent = item.id === currentId
-          const ItemIcon
-            = isCurrent ? ChatBubbleOvalLeftEllipsisSolidIcon : ChatBubbleOvalLeftEllipsisIcon
+          const ItemIcon = isCurrent ? ChatBubbleOvalLeftEllipsisSolidIcon : ChatBubbleOvalLeftEllipsisIcon
+
           return (
             <div
-              onClick={() => onCurrentIdChange(item.id)}
               key={item.id}
               className={classNames(
                 isCurrent
                   ? 'bg-primary-50 text-primary-600'
                   : 'text-gray-700 hover:bg-gray-100 hover:text-gray-700',
-                'group flex items-center rounded-md px-2 py-2 text-sm font-medium cursor-pointer',
+                'group relative flex items-center rounded-md px-2 py-2 text-sm font-medium cursor-pointer'
               )}
             >
-              <ItemIcon
-                className={classNames(
-                  isCurrent
-                    ? 'text-primary-600'
-                    : 'text-gray-400 group-hover:text-gray-500',
-                  'mr-3 h-5 w-5 flex-shrink-0',
-                )}
-                aria-hidden="true"
-              />
-              {item.name}
+              <div
+                className="flex-1 flex items-center"
+                onClick={() => onCurrentIdChange(item.id)}
+              >
+                <ItemIcon
+                  className={classNames(
+                    isCurrent
+                      ? 'text-primary-600'
+                      : 'text-gray-400 group-hover:text-gray-500',
+                    'mr-3 h-5 w-5 flex-shrink-0',
+                  )}
+                  aria-hidden="true"
+                />
+                {item.name}
+              </div>
+              
+              {/* Ellipsis menu button (only visible on hover) */}
+              <div className="relative">
+                <button
+                  className="ml-2 p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-200 invisible group-hover:visible"
+                  onClick={(e) => {
+                    // Prevent triggering conversation change when clicking on menu
+                    e.stopPropagation()
+                  }}
+                >
+                  <EllipsisVerticalIcon className="h-5 w-5" />
+                </button>
+
+                {/* Dropdown menu shown on hover of the ellipsis button. 
+                    One way to handle it is to always show the menu on hover (CSS-only), or toggle state on click.
+                    Here is a hover-based example. Adjust as needed.
+                */}
+                <div className="absolute right-0 top-8 z-10 w-28 py-1 bg-white rounded-md shadow-lg border border-gray-200 invisible group-hover:visible">
+                  <button
+                    className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                    onClick={() => {
+                      if (onDeleteConversation) {
+                        onDeleteConversation(item.id)
+                      }
+                    }}
+                  >
+                    <TrashIcon className="h-4 w-4 mr-2 text-red-500" />
+                    {t('app.chat.delete')}
+                  </button>
+                </div>
+              </div>
             </div>
           )
         })}
       </nav>
-      {/* <a className="flex flex-shrink-0 p-4" href="https://langgenius.ai/" target="_blank">
-        <Card><div className="flex flex-row items-center"><ChatBubbleOvalLeftEllipsisSolidIcon className="text-primary-600 h-6 w-6 mr-2" /><span>LangGenius</span></div></Card>
-      </a> */}
+
       <div className="flex flex-shrink-0 pr-4 pb-4 pl-4">
         <div className="text-gray-400 font-normal text-xs">© {copyRight} {(new Date()).getFullYear()}</div>
       </div>
